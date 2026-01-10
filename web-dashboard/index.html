@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Fence Command Center</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body { background-color: #1a1c23; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* CARD STYLING */
+        .card { background-color: #24262d; border: 1px solid #374151; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .card-header { background-color: #1f2937; border-bottom: 1px solid #374151; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #9ca3af; }
+        
+        /* ANALYTICS CARDS */
+        .stat-card { border-left: 5px solid; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-icon { font-size: 2.5rem; opacity: 0.8; }
+        .stat-value { font-size: 2rem; font-weight: bold; }
+        .stat-label { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+        
+        /* STATUS INDICATORS */
+        .status-box { padding: 15px; text-align: center; border-radius: 6px; font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; transition: all 0.3s ease; }
+        .status-secure { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; }
+        .status-breached { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #dc2626; animation: pulse-red 2s infinite; }
+        
+        /* EVIDENCE IMAGE */
+        .evidence-container { position: relative; width: 100%; height: 350px; background: #000; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #4b5563; }
+        .evidence-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .placeholder-text { color: #6b7280; font-size: 1.2rem; }
+        
+        /* DATA LABELS */
+        .data-label { color: #9ca3af; font-size: 0.85rem; text-transform: uppercase; }
+        .data-value { color: #fff; font-size: 1.1rem; font-weight: 500; }
+        
+        /* HISTORY TABLE */
+        .table-dark { background-color: #24262d; }
+        .table-dark th { color: #9ca3af; font-weight: 600; border-bottom: 1px solid #374151; }
+        .table-dark td { border-bottom: 1px solid #374151; vertical-align: middle; }
+        
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="m-0"><i class="fas fa-shield-alt text-primary me-2"></i> FENCE MONITORING SYSTEM</h2>
+        <span class="badge bg-success" id="connectionStatus">System Online</span>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="card stat-card p-3" style="border-color: #ef4444;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value text-danger" id="countIntruder">0</div>
+                        <div class="stat-label text-danger">Intruders Caught</div>
+                    </div>
+                    <i class="fas fa-exclamation-triangle stat-icon text-danger"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card p-3" style="border-color: #f59e0b;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value text-warning" id="countHuman">0</div>
+                        <div class="stat-label text-warning">Humans Detected Near Fence</div>
+                    </div>
+                    <i class="fas fa-user-secret stat-icon text-warning"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card p-3" style="border-color: #3b82f6;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value text-primary" id="countMotion">0</div>
+                        <div class="stat-label text-primary">Motion Alerts</div>
+                    </div>
+                    <i class="fas fa-running stat-icon text-primary"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="card-header">Current Status</div>
+                <div class="card-body">
+                    <div id="mainStatus" class="status-box status-secure">SECURE</div>
+                    
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="data-label">Last Motion (PIR):</span>
+                            <span id="lblMotion" class="data-value text-end">--</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="data-label">Last Human (AI):</span>
+                            <span id="lblHuman" class="data-value text-end">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Evidence Details</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="data-label">Date</div>
+                            <div id="evDate" class="data-value">--</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="data-label">Time</div>
+                            <div id="evTime" class="data-value">--</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="data-label">Location</div>
+                            <div class="data-value"><i class="fas fa-map-marker-alt text-danger me-2"></i>Fence 01 (Main Gate)</div>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <a id="btnDownload" href="#" target="_blank" class="btn btn-outline-light w-100 disabled">
+                                <i class="fas fa-download me-2"></i> Download Full Image
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <span>LATEST SNAPSHOT</span>
+                    <small class="text-muted">Live Update</small>
+                </div>
+                <div class="card-body p-0">
+                    <div class="evidence-container">
+                        <img id="evidenceImg" src="" class="evidence-img" style="display:none;">
+                        <div id="imgPlaceholder" class="placeholder-text">
+                            <i class="fas fa-camera fa-2x mb-2"></i><br>Waiting for Evidence...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Recent Alerts Log</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 250px;">
+                        <table class="table table-dark table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Event Type</th>
+                                    <th>Status</th>
+                                    <th>Proof</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTable">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+<script>
+    // ==========================================================
+    // CONFIGURATION - REPLACE WITH FIREBASE CREDENTIAL
+    // ==========================================================
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY_HERE",                                    // Replace with Firebase API Key
+        authDomain: "your-project-id.firebaseapp.com",                 // Replace with  Firebase Auth Domain
+        databaseURL: "https://your-project-id-default-rtdb.firebaseio.com/", // Replace with Database URL
+        projectId: "your-project-id",                                  // Replace with  Project ID
+        storageBucket: "your-project-id.firebasestorage.app",         // Replace with Storage Bucket
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",                // Replace with  Messaging Sender ID
+        appId: "YOUR_APP_ID"                                          // Replace with  App ID
+    };
+
+    // Initialize
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const storage = firebase.storage();
+
+    // --- 1. LIVE DASHBOARD LISTENER ---
+    const liveRef = db.ref('dashboard_live');
+    
+    liveRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if(!data) return;
+
+        // A. Update Status Box
+        const statusBox = document.getElementById('mainStatus');
+        const statusText = data.system_status || "UNKNOWN";
+        statusBox.innerText = `[ ${statusText} ]`;
+        
+        // Toggle Colors
+        statusBox.className = 'status-box'; // Reset
+        if (statusText === 'SECURE') statusBox.classList.add('status-secure');
+        else statusBox.classList.add('status-breached');
+
+        // B. Update Timestamps
+        document.getElementById('lblMotion').innerText = data.last_motion || "--";
+        document.getElementById('lblHuman').innerText = data.last_human || "--";
+
+        // C. Update Evidence Image (Only if Changed)
+        if (data.evidence && data.evidence.image_path !== "NONE") {
+            document.getElementById('evDate').innerText = data.evidence.date;
+            document.getElementById('evTime').innerText = data.evidence.time;
+            
+            // Fetch Image URL
+            const path = data.evidence.image_path;
+            const imgRef = storage.ref(path);
+            
+            imgRef.getDownloadURL().then((url) => {
+                const imgTag = document.getElementById('evidenceImg');
+                const placeholder = document.getElementById('imgPlaceholder');
+                const btn = document.getElementById('btnDownload');
+                
+                imgTag.src = url;
+                imgTag.style.display = 'block';
+                placeholder.style.display = 'none';
+                
+                btn.href = url;
+                btn.classList.remove('disabled');
+            }).catch((err) => console.log("Image load error:", err));
+        }
+    });
+
+    // --- 2. HISTORY LISTENER & ANALYTICS CALCULATOR ---
+    const alertsRef = db.ref('alerts');
+    
+    // We listen to 'value' to calculate totals across ALL data
+    alertsRef.on('value', (snapshot) => {
+        const table = document.getElementById('historyTable');
+        table.innerHTML = ""; // Clear table to rebuild
+        
+        let countMotion = 0;
+        let countHuman = 0;
+        let countIntruder = 0;
+        
+        const dataList = [];
+
+        snapshot.forEach((childSnapshot) => {
+            const data = childSnapshot.val();
+            dataList.push(data); // Store for sorting
+            
+            // --- ANALYTICS CALCULATION ---
+            if (data.event_type.includes("Motion")) countMotion++;
+            if (data.event_type.includes("Human")) countHuman++;
+            if (data.event_type.includes("Breach")) countIntruder++;
+        });
+
+        // Update Analytics Cards
+        document.getElementById('countMotion').innerText = countMotion;
+        document.getElementById('countHuman').innerText = countHuman;
+        document.getElementById('countIntruder').innerText = countIntruder;
+
+        // Sort data (Newest First) and Display Last 15
+        dataList.reverse().slice(0, 15).forEach(data => {
+            const row = table.insertRow(-1); // Append to bottom
+            
+            // Define Badge Color
+            let badgeClass = 'bg-secondary';
+            if(data.system_status === 'BREACHED') badgeClass = 'bg-danger';
+            else if(data.system_status === 'DANGER') badgeClass = 'bg-warning text-dark';
+            else if(data.system_status === 'WARNING') badgeClass = 'bg-info text-dark';
+
+            // Image Link Logic
+            let imageLink = '<span class="text-muted">-</span>';
+            if(data.image_path && data.image_path !== "NONE") {
+                imageLink = `<button class="btn btn-sm btn-outline-primary" onclick="openImage('${data.image_path}')"><i class="fas fa-eye"></i></button>`;
+            }
+
+            row.innerHTML = `
+                <td>${data.time}<br><small class="text-muted">${data.date}</small></td>
+                <td>${data.event_type}</td>
+                <td><span class="badge ${badgeClass}">${data.system_status}</span></td>
+                <td>${imageLink}</td>
+            `;
+        });
+    });
+
+    // Helper to open images from history
+    window.openImage = function(path) {
+        storage.ref(path).getDownloadURL().then((url) => {
+            window.open(url, '_blank');
+        });
+    }
+
+</script>
+
+</body>
+</html>
