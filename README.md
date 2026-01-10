@@ -2,7 +2,7 @@
 CPC357 IOT ARCHITECTURE AND SMART APPLICATIONS (PROJECT)
 
 ## Project Description
-This project presents an IoT-based smart perimeter fence monitoring system that design to enhance security in gated environments such as universities, residential compounds, and industrial facilitiesin the smart city environment.
+This project presents an IoT-based smart perimeter fence monitoring system that design to enhance security in gated environments such as universities, residential compounds, and industrial facilities in the smart city environment.
 
 The system combines PIR motion sensing, ESP32-CAM human presence detection, and IR break-beam intrusion confirmation to provide accurate, real-time detection of unauthorized boundary breaches. Verified intrusion events are logged to a cloud platform and visualized through a web-based dashboard, enabling faster response and reduced false alarms.
 
@@ -51,13 +51,13 @@ The system follows an event-driven, sensor-fusion architecture:
 
 ## Dashboard Features
 - Real-time system status (SECURE / BREACHED)
-- Alert logs (Motion detected, Human detected, Intrusion) and its counter
+- Alert logs (Motion detected, Human detected, Intrusion) and their counters
 - Visual evidence of intrusion display
 
 ---------------------
 ## Setup and Installation Instructions
 ### 1. Hardware Setup
-- Connect PIR sensor, IR break-beam, and buzzer to NodeMCU ESP32
+- Connect the PIR sensor, the IR break-beam, and the buzzer to the NodeMCU ESP32
 - Connect ESP32-CAM to NodeMCU via UART
 - Ensure proper power supply for ESP32-CAM and NodeMCU ESP32
 
@@ -119,4 +119,4 @@ SmartPerimeterFenceMonitoring/
 ## SDG 11 Contribution
 This project supports SDG 11 Smart City by improving urban safety, reducing reliance on manual security monitoring, and promoting efficient use of energy and human resources through automation and edge intelligence.
 
-This project is developed for academic purposes for CPC357 IoT and Smart Application.
+This project is developed for academic purposes for CPC357 IoT Architecture and Smart Application.
