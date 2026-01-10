@@ -66,6 +66,7 @@ The system follows an event-driven, sensor-fusion architecture:
 2. Install ESP32 Board Package
 3. Install required libraries:
    - Firebase Arduino Client Library
+   - Adafruit Unified Sensor
 4. Configure Wi-Fi and Firebase credentials in the '.ino' files
 5. Upload firmware to NodeMCU and ESP32-CAM
 
@@ -80,6 +81,7 @@ The system follows an event-driven, sensor-fusion architecture:
 ### Software Libraries
 - ESP32 Board Package by Espressif Systems 2.0.0v (to be able to use face detection features of ESP32-CAM)
 - Firebase Arduino Client Library for ESP8266 AND ESP32 by Mobizt 4.4.17v
+- Adafruit Unified Sensor by Adafruit 1.1.15v
 
 ---------------------
 ## Repository Structure
