@@ -81,6 +81,34 @@ The system follows an event-driven, sensor-fusion architecture:
 ---------------------
 ## Repository Structure
 
+```
+SmartPerimeterFenceMonitoring/
+│
+├── README.md                          # Project documentation
+│
+├── firmware/                         
+│   ├── ESP32-CAM/                    # ESP32-CAM controller
+│   │   ├── CameraWebServer.ino       # Main camera firmware with Firebase integration
+│   │   ├── app_httpd.cpp             # HTTP server & custom face detection function
+│   │   ├── camera_index.h            # File needed to upload the CameraWebServer.ino
+│   │   └── camera_pins.h             # GPIO pin definitions for AI-THINKER camera model
+│   │
+│   └── NodeMCU/                      # NodeMCU ESP32 controller
+│       └── smartfence.ino            # Master controller with state machine logic
+│
+├── web-dashboard/                    
+│   ├── index.html                    # Dashboard UI with Firebase integration
+│   └── firebase.json                 # Firebase Hosting configuration
+│
+└── docs/                             # Documentation and resources
+    └── dashboard_screenshot/         # System screenshots for documentation
+```
+
+**Key Files:**
+- `CameraWebServer.ino`: Handles WiFi, camera initialization, serial commands, and Firebase operations
+- `app_httpd.cpp`: Contains custom `check_for_human_offline()` function for AI detection
+- `smartfence.ino`: Main security logic with PIR/IR sensor management and ESP32-CAM communication
+- `index.html`: Real-time dashboard displaying system status, alerts, and evidence images
 ---------------------
 
 ## SDG 11 Contribution
