@@ -33,6 +33,9 @@ The system follows an event-driven, sensor-fusion architecture:
 - 5V Power Supply (Powerbank)
 - Resistor
 - Transistor
+- Jumper Wires
+- USB Pigtails
+- 5V USB
 
 ## Software Components
 - Arduino IDE
@@ -62,7 +65,7 @@ The system follows an event-driven, sensor-fusion architecture:
 1. Install Arduino IDE
 2. Install ESP32 Board Package
 3. Install required libraries:
-   - Firebase ESP Client
+   - Firebase Arduino Client Library
 4. Configure Wi-Fi and Firebase credentials in the '.ino' files
 5. Upload firmware to NodeMCU and ESP32-CAM
 
@@ -75,8 +78,8 @@ The system follows an event-driven, sensor-fusion architecture:
 ---------------------
 ## Dependencies and Requirements
 ### Software Libraries
-- ESP32 Board Package 2.0.0v
-- Firebase_ESP_Client
+- ESP32 Board Package by Espressif Systems 2.0.0v (to be able to use face detection features of ESP32-CAM)
+- Firebase Arduino Client Library for ESP8266 AND ESP32 by Mobizt 4.4.17v
 
 ---------------------
 ## Repository Structure
